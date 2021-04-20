@@ -19,12 +19,25 @@ namespace SmartMedical.BLL
         {
             _db = db;
         }
-        public int Login(Admin m)
+        //登录
+        public int Login(string phone,string password)
         {
-            string sql = $"select * from admin where adminname='{m.AdminName}' and adminpassword='{m.AdminPassWord}'";
+            string sql = $"select * from admin where adminname='{phone}' and adminpassword='{password}'";
             DataSet ds = _db.GetDateSet(sql);
             int h = ds.Tables[0].Rows.Count;
             return h;
+        }
+        //验证手机号是否存在
+        public DataSet ZhuCe(string phone) 
+        {
+            string sql = $"select * from patient where patientphone='{phone}'";
+            return _db.GetDateSet(sql);
+        }
+        //注册
+        public int ZhuceIn(string phone) 
+        {
+            string sql = $"insert into patient(patientphone) values ('{phone}') ";
+            return _db.ExecuteNonQuery(sql);
         }
         public class LoginTel
         {

@@ -59,6 +59,12 @@ namespace SmartMedical.DAL
         {
             using (SqlConnection conn=new SqlConnection(connstr))
             {
+                //打开
+                //判断状态
+                if (conn.State == ConnectionState.Closed)
+                {
+                    conn.Open();
+                }
                 SqlCommand cmd = new SqlCommand(sql,conn);
                 DataSet ds = new DataSet();
                 SqlDataAdapter sda = new SqlDataAdapter(cmd);

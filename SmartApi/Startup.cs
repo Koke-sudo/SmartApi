@@ -37,16 +37,15 @@ namespace SmartApi
             services.AddTransient<SmartMedicalBLL>();
             services.AddTransient<DBHelper>();
             services.AddTransient<LoginTel>();
-            //跨域
-            services.AddCors(options =>
+            // 设置允许所有来源跨域
+            services.AddCors(options => options.AddPolicy("1808api",
+            builder =>
             {
-                options.AddPolicy("1808api", builder =>
-                {
-                    builder
-                        .AllowAnyOrigin()
-                        .AllowAnyMethod();
-                });
-            });
+                builder.AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .SetIsOriginAllowed(_ => true) // =AllowAnyOrigin()
+                    .AllowCredentials();
+            }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,6 +58,7 @@ namespace SmartApi
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SmartApi v1"));
             }
 
+            app.UseCors("1808api");
             app.UseRouting();
 
             app.UseAuthorization();
@@ -67,7 +67,6 @@ namespace SmartApi
             {
                 endpoints.MapControllers();
             });
-            app.UseCors("1808api");
         }
     }
 }
