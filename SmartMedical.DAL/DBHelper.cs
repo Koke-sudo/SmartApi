@@ -55,7 +55,7 @@ namespace SmartMedical.DAL
         }
 
 
-        public DataSet GetDateSet( string sql) 
+        public DataSet GetDateSet(string sql) 
         {
             using (SqlConnection conn=new SqlConnection(connstr))
             {

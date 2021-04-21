@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SmartMedical.BLL;
 using SmartMedical.DAL;
+using SmartMedical.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -26,12 +27,10 @@ namespace SmartMedical.Controllers
         /// </summary>
         SmartMedicalBLL _bll;
         LoginTel _logintel;
-        DBHelper _db;
-        public PatientController(SmartMedicalBLL bll, LoginTel logintel, DBHelper db)
+        public PatientController(SmartMedicalBLL bll, LoginTel logintel)
         {
             _bll = bll;
             _logintel = logintel;
-            _db = db;
         }
 
         /// <summary>
@@ -41,7 +40,7 @@ namespace SmartMedical.Controllers
         /// <param name="password"></param>
         /// <returns></returns>
         [Route("login"),HttpPost]
-        public IActionResult Login(string phone,string password) 
+        public IActionResult Login(string phone,string password)
         {
             int h = _bll.Login(phone,password);
             return Ok(new { msg =h>0?"登录成功!":"账号或密码错误!",state=h > 0 ?true:false });
@@ -81,6 +80,16 @@ namespace SmartMedical.Controllers
             string code = r.Next(1000,9999).ToString();
             var str = _logintel.sendSmsCode(phone,code);
             return Ok(new { data=str,code=code});
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [Route("getpatients"),HttpGet]
+        public IActionResult GetPatients() 
+        {
+            List<Patient> list = _bll.GetPatients();
+            return Ok(new { data=list});
         }
     }
 }

@@ -19,26 +19,47 @@ namespace SmartMedical.BLL
         {
             _db = db;
         }
-        //登录
+        //患者模块
+        #region
+        //患者登录
         public int Login(string phone,string password)
         {
-            string sql = $"select * from admin where adminname='{phone}' and adminpassword='{password}'";
+            string sql = $"select * from patient where patientphone='{phone}' and patientpassword='{password}'";
             DataSet ds = _db.GetDateSet(sql);
             int h = ds.Tables[0].Rows.Count;
             return h;
         }
-        //验证手机号是否存在
+        //获取所有患者信息
+        public List<Patient> GetPatients() 
+        {
+            string sql = "select * from patient";
+            DataSet ds = _db.GetDateSet(sql);
+            List<Patient> list = _db.TableToList<Patient>(ds.Tables[0]);
+            return list;
+        }
+        //验证患者手机号是否存在
         public DataSet ZhuCe(string phone) 
         {
             string sql = $"select * from patient where patientphone='{phone}'";
             return _db.GetDateSet(sql);
         }
-        //注册
+        //注册患者
         public int ZhuceIn(string phone) 
         {
             string sql = $"insert into patient(patientphone) values ('{phone}') ";
             return _db.ExecuteNonQuery(sql);
         }
+        #endregion
+        //医生模块
+        #region
+        //医生登录
+        public int DoctorLogin(string phone,string password)
+        {
+            string sql = $"select * from doctor where userphone='{phone}' and userpassword='{password}'";
+            DataSet ds = _db.GetDateSet(sql);
+            return ds.Tables[0].Rows.Count;
+        }
+        #endregion
         public class LoginTel
         {
             //接口测试地址（未上线前测试环境使用）
