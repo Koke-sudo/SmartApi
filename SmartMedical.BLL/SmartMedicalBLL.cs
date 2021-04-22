@@ -60,6 +60,9 @@ namespace SmartMedical.BLL
             return ds.Tables[0].Rows.Count;
         }
         #endregion
+        //管理员模块
+        #region
+        #endregion
         public class LoginTel
         {
             //接口测试地址（未上线前测试环境使用）
