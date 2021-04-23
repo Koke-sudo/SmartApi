@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SmartMedical.BLL;
+using SmartMedical.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,13 +46,34 @@ namespace SmartApi.Controllers
             return Ok(new { data=str,code=code});
         }
         /// <summary>
-        /// 
+        /// 注册
         /// </summary>
         /// <returns></returns>
-        [Route("zhuce"),HttpPost]
-        public IActionResult ZhuCe() 
+        [Route("zhuce"),HttpGet]
+        public IActionResult ZhuCe(string phone,string password) 
         {
+
             return Ok();
+        }
+        /// <summary>
+        /// 获取医院列表
+        /// </summary>
+        /// <returns></returns>
+        [Route("gethospital"), HttpGet]
+        public IActionResult GetHospital() 
+        {
+            List<Hospital> list = _bll.GetHospital();
+            return Ok(new { data=list});
+        }
+        /// <summary>
+        /// 获取医师等级
+        /// </summary>
+        /// <returns></returns>
+        [Route("getdoctorlv")]
+        public IActionResult GetDoctorLv() 
+        {
+            List<DoctorLv> list = _bll.GetDoctorLv();
+            return Ok(new { data=list});
         }
     }
 }

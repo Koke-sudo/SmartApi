@@ -6,13 +6,12 @@ using System.Text;
 namespace SmartMedical.Model
 {
     /// <summary>
-    /// 管理员表
+    /// 医师等级表
     /// </summary>
-    [Table("Admin")]
-    public class Admin
+    [Table("doctorlv")]
+    public class DoctorLv
     {
-        public int AdminId { get; set; }
-        public string AdminName { get; set; }
-        public string AdminPassWord { get; set; }
+        public int DoctorId { get; set; }
+        public string DoctorLvName { get; set; }
     }
 }

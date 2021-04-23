@@ -5,6 +5,9 @@ using System.Text;
 
 namespace SmartMedical.Model
 {
+    /// <summary>
+    /// 患者表
+    /// </summary>
     [Table("patient")]
     public class Patient
     {

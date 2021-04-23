@@ -59,6 +59,20 @@ namespace SmartMedical.BLL
             DataSet ds = _db.GetDateSet(sql);
             return ds.Tables[0].Rows.Count;
         }
+        //获取医院列表
+        public List<Hospital> GetHospital() 
+        {
+            string sql = $"select * from hospital";
+            List<Hospital> list = _db.TableToList<Hospital>(_db.GetDateSet(sql).Tables[0]);
+            return list;
+        }
+        //获取医师等级列表
+        public List<DoctorLv> GetDoctorLv ()
+        {
+            string sql = $"select * from doctorlv";
+            List<DoctorLv> list = _db.TableToList<DoctorLv>(_db.GetDateSet(sql).Tables[0]);
+            return list;
+        }
         #endregion
         //管理员模块
         #region
