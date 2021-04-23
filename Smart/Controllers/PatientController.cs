@@ -55,7 +55,6 @@ namespace SmartMedical.Controllers
         public IActionResult Zhuce(string phone) 
         {
             int h = 0;
-            
             DataSet ds = _bll.ZhuCe(phone);
             if (ds.Tables[0].Rows.Count>0)
             {
