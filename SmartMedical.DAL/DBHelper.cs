@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.Data;
 using Microsoft.Extensions.Configuration;
+using System.IO;
 
 namespace SmartMedical.DAL
 {
@@ -46,30 +47,39 @@ namespace SmartMedical.DAL
                     }
                     return n;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-
+                    WriteLog(ex.ToString());
                     throw;
                 }
             }
         }
 
 
-        public DataSet GetDateSet(string sql) 
+        public DataSet GetDateSet(string sql)
         {
-            using (SqlConnection conn=new SqlConnection(connstr))
+            using (SqlConnection conn = new SqlConnection(connstr))
             {
-                //打开
-                //判断状态
-                if (conn.State == ConnectionState.Closed)
+                try
                 {
-                    conn.Open();
+                    //打开
+                    //判断状态
+                    if (conn.State == ConnectionState.Closed)
+                    {
+                        conn.Open();
+                    }
+                    SqlCommand cmd = new SqlCommand(sql, conn);
+                    DataSet ds = new DataSet();
+                    SqlDataAdapter sda = new SqlDataAdapter(cmd);
+                    sda.Fill(ds);
+                    return ds;
                 }
-                SqlCommand cmd = new SqlCommand(sql,conn);
-                DataSet ds = new DataSet();
-                SqlDataAdapter sda = new SqlDataAdapter(cmd);
-                sda.Fill(ds);
-                return ds;
+                catch (Exception ex)
+                {
+                    WriteLog(ex.ToString());
+                    throw;
+                }
+
             }
         }
 
@@ -105,9 +115,9 @@ namespace SmartMedical.DAL
                     }
                     return n;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-
+                    WriteLog(ex.ToString());
                     throw;
                 }
             }
@@ -118,39 +128,75 @@ namespace SmartMedical.DAL
 
         public List<T> TableToList<T>(DataTable dt, bool isStoreDB = true)
         {
-            List<T> list = new List<T>();
-            Type type = typeof(T);
-            //List<string> listColums = new List<string>();
-            PropertyInfo[] pArray = type.GetProperties(); //集合属性数组
-            foreach (DataRow row in dt.Rows)
+            try
             {
-                T entity = Activator.CreateInstance<T>(); //新建对象实例 
-                foreach (PropertyInfo p in pArray)
+                List<T> list = new List<T>();
+                Type type = typeof(T);
+                //List<string> listColums = new List<string>();
+                PropertyInfo[] pArray = type.GetProperties(); //集合属性数组
+                foreach (DataRow row in dt.Rows)
                 {
-                    if (!dt.Columns.Contains(p.Name) || row[p.Name] == null || row[p.Name] == DBNull.Value)
+                    T entity = Activator.CreateInstance<T>(); //新建对象实例 
+                    foreach (PropertyInfo p in pArray)
                     {
-                        continue;  //DataTable列中不存在集合属性或者字段内容为空则，跳出循环，进行下个循环   
+                        if (!dt.Columns.Contains(p.Name) || row[p.Name] == null || row[p.Name] == DBNull.Value)
+                        {
+                            continue;  //DataTable列中不存在集合属性或者字段内容为空则，跳出循环，进行下个循环   
+                        }
+                        if (isStoreDB && p.PropertyType == typeof(DateTime) && Convert.ToDateTime(row[p.Name]) < Convert.ToDateTime("1753-01-01"))
+                        {
+                            continue;
+                        }
+                        try
+                        {
+                            var obj = Convert.ChangeType(row[p.Name], p.PropertyType);//类型强转，将table字段类型转为集合字段类型  
+                            p.SetValue(entity, obj, null);
+                        }
+                        catch (Exception)
+                        {
+                            // throw;
+                        }
                     }
-                    if (isStoreDB && p.PropertyType == typeof(DateTime) && Convert.ToDateTime(row[p.Name]) < Convert.ToDateTime("1753-01-01"))
-                    {
-                        continue;
-                    }
-                    try
-                    {
-                        var obj = Convert.ChangeType(row[p.Name], p.PropertyType);//类型强转，将table字段类型转为集合字段类型  
-                        p.SetValue(entity, obj, null);
-                    }
-                    catch (Exception)
-                    {
-                        // throw;
-                    }
+                    list.Add(entity);
+
                 }
-                list.Add(entity);
+                return list;
             }
-            return list;
+            catch (Exception ex)
+            {
+                WriteLog(ex.ToString());
+                throw;
+            }
+
+
         }
 
-
+        public static void WriteLog(string strLog)
+        {
+            string sFilePath = "c:\\" + DateTime.Now.ToString("yyyyMM");
+            string sFileName = "rizhi" + DateTime.Now.ToString("dd") + ".log";
+            sFileName = sFilePath + "\\" + sFileName; //文件的绝对路径
+            if (!Directory.Exists(sFilePath))//验证路径是否存在
+            {
+                Directory.CreateDirectory(sFilePath);
+                //不存在则创建
+            }
+            FileStream fs;
+            StreamWriter sw;
+            if (File.Exists(sFileName))
+            //验证文件是否存在，有则追加，无则创建
+            {
+                fs = new FileStream(sFileName, FileMode.Append, FileAccess.Write);
+            }
+            else
+            {
+                fs = new FileStream(sFileName, FileMode.Create, FileAccess.Write);
+            }
+            sw = new StreamWriter(fs);
+            sw.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") + "   ---   " + strLog);
+            sw.Close();
+            fs.Close();
+        }
 
         #endregion
 
@@ -181,9 +227,9 @@ namespace SmartMedical.DAL
                     }
                     return n;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-
+                    WriteLog(ex.ToString());
                     throw;
                 }
             }

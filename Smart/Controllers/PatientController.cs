@@ -34,7 +34,7 @@ namespace SmartMedical.Controllers
         }
 
         /// <summary>
-        /// 
+        /// 患者登录
         /// </summary>
         /// <param name="phone"></param>
         /// <param name="password"></param>
@@ -47,7 +47,7 @@ namespace SmartMedical.Controllers
         }
 
         /// <summary>
-        /// 
+        /// 患者注册  手机号注册
         /// </summary>
         /// <param name="phone"></param>
         /// <returns></returns>
@@ -69,7 +69,7 @@ namespace SmartMedical.Controllers
         }
 
         /// <summary>
-        /// 
+        /// 患者验证码登录
         /// </summary>
         /// <param name="phone"></param>
         /// <returns></returns>
@@ -82,7 +82,7 @@ namespace SmartMedical.Controllers
             return Ok(new { data=str,code=code});
         }
         /// <summary>
-        /// 
+        /// 获取患者列表
         /// </summary>
         /// <returns></returns>
         [Route("getpatients"),HttpGet]
@@ -90,12 +90,6 @@ namespace SmartMedical.Controllers
         {
             List<Patient> list = _bll.GetPatients();
             return Ok(list);
-        }
-
-        [Route("tt"), HttpGet]
-        public IActionResult TT()
-        {
-            return Ok("1232323");
         }
     }
 }

@@ -14,6 +14,7 @@ namespace SmartMedical.Model
         public int PatientId       { get; set; }
         public string PatientCode     { get; set; }
         public string PatientName     { get; set; }
+        public string PatientSex     { get; set; }
         public int PatientAge      { get; set; }
         public int PatientHeight   { get; set; }
         public int PatientWeight   { get; set; }

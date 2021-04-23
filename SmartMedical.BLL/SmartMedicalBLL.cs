@@ -1,5 +1,6 @@
 ﻿using SmartMedical.DAL;
 using SmartMedical.Model;
+using SmartMedical.Model.Join;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -19,10 +20,12 @@ namespace SmartMedical.BLL
         {
             _db = db;
         }
+
+
         //患者模块
         #region
         //患者登录
-        public int Login(string phone,string password)
+        public int Login(string phone, string password)
         {
             string sql = $"select * from patient where patientphone='{phone}' and patientpassword='{password}'";
             DataSet ds = _db.GetDateSet(sql);
@@ -30,7 +33,7 @@ namespace SmartMedical.BLL
             return h;
         }
         //获取所有患者信息
-        public List<Patient> GetPatients() 
+        public List<Patient> GetPatients()
         {
             string sql = "select * from patient";
             DataSet ds = _db.GetDateSet(sql);
@@ -38,42 +41,69 @@ namespace SmartMedical.BLL
             return list;
         }
         //验证患者手机号是否存在
-        public DataSet ZhuCe(string phone) 
+        public DataSet ZhuCe(string phone)
         {
             string sql = $"select * from patient where patientphone='{phone}'";
             return _db.GetDateSet(sql);
         }
         //注册患者
-        public int ZhuceIn(string phone) 
+        public int ZhuceIn(string phone)
         {
             string sql = $"insert into patient(patientphone) values ('{phone}') ";
             return _db.ExecuteNonQuery(sql);
         }
         #endregion
+
+
+
         //医生模块
         #region
         //医生登录
-        public int DoctorLogin(string phone,string password)
+        public int DoctorLogin(string phone, string password)
         {
             string sql = $"select * from doctor where userphone='{phone}' and userpassword='{password}'";
             DataSet ds = _db.GetDateSet(sql);
             return ds.Tables[0].Rows.Count;
         }
         //获取医院列表
-        public List<Hospital> GetHospital() 
+        public List<Hospital> GetHospital()
         {
             string sql = $"select * from hospital";
             List<Hospital> list = _db.TableToList<Hospital>(_db.GetDateSet(sql).Tables[0]);
             return list;
         }
         //获取医师等级列表
-        public List<DoctorLv> GetDoctorLv ()
+        public List<DoctorLv> GetDoctorLv()
         {
             string sql = $"select * from doctorlv";
             List<DoctorLv> list = _db.TableToList<DoctorLv>(_db.GetDateSet(sql).Tables[0]);
             return list;
         }
+        //诊断管理显示
+        public List<Diagnose> GetDiagnose()
+        {
+            string sql = $"select InquiryDate, sum(InquiryPrice) as Price,count(*) as PatientNum from Inquiry group by InquiryDate";
+            List<Diagnose> list = _db.TableToList<Diagnose>(_db.GetDateSet(sql).Tables[0]);
+            return list;
+        }
+        //直播列表
+        public List<Live> GetLives()
+        {
+            string sql = "select * from live";
+            List<Live> list = _db.TableToList<Live>(_db.GetDateSet(sql).Tables[0]);
+            return list;
+        }
+        //获取诊断台各个字段数据
+        public List<GetInquiry> GetInquiry()
+        {
+            string sql = "select c.InquiryDate,c.InquiryPrice,a.PatientName,c.InquiryMessage,a.PatientAge,c.InquiryRemark,a.PatientSex,a.PatientHeight,a.PatientWeight,b.Kidney,b.Marriage,b.Bith,b.DiseasesHistory,b.Liver,d.Diagnose from Patient a join HealthFile b on a.PatientCode = b.PatientCode join Inquiry c on a.PatientCode = c.PatientCode join Report d on a.PatientCode = d.PatientCode";
+            List<GetInquiry> list = _db.TableToList<GetInquiry>(_db.GetDateSet(sql).Tables[0]);
+            return list;
+        }
         #endregion
+
+
+
         //管理员模块
         #region
         #endregion
