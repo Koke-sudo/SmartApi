@@ -7,6 +7,7 @@ namespace SmartMedical.Model.Join
     //接诊台列表
     public class GetInquiry
     {
+        public int i { get; set; }
         public DateTime InquiryDate { get; set; }
         public string InquiryDateStr { get { return this.InquiryDate.ToString("yyyy-MM-dd"); } set { } }
         public int InquiryPrice { get; set; }
