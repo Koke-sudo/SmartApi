@@ -46,6 +46,7 @@ namespace SmartMedical.BLL
             string sql = $"select * from patient where patientphone='{phone}'";
             return _db.GetDateSet(sql);
         }
+
         //注册患者
         public int ZhuceIn(string phone)
         {
@@ -64,6 +65,25 @@ namespace SmartMedical.BLL
             string sql = $"select * from doctor where userphone='{phone}' and userpassword='{password}'";
             DataSet ds = _db.GetDateSet(sql);
             return ds.Tables[0].Rows.Count;
+        }
+        //医生注册 先查有没有此手机号
+        public int GetByPhone(string phone) 
+        {
+            string sql = $"select * from doctor where userphone ='{phone}'";
+            DataSet ds = _db.GetDateSet(sql);
+            return ds.Tables[0].Rows.Count;
+        }
+        //若不存在此手机号则插入此用户数据  带密码
+        public int InsertDoctorPhone(string phone,string password) 
+        {
+            string sql = $"insert into doctor (userphone,userpassword) values('{phone}','{password}')";
+            return _db.ExecuteNonQuery(sql);
+        }
+        //注册第二步 完善资料
+        public int UpdDoctorByPhone(InsertDoctor m) 
+        {
+            string sql = $"update doctor set doctorname='{m.DoctorName}',doctorlv={m.DoctorLv},doctoridcard='{m.DoctorIdCard}',doctorhospital='{m.DoctorHospital}',doctoridcardimg='{m.DoctorIdCardImg}',doctorzgzs='{m.DoctorZgzs}',doctoryyzs='{m.DoctorYyzs}' where userphone='{m.DoctorPhone}'";
+            return _db.ExecuteNonQuery(sql);
         }
         //获取医院列表
         public List<Hospital> GetHospital()
@@ -106,6 +126,12 @@ namespace SmartMedical.BLL
 
         //管理员模块
         #region
+        //患者管理列表
+        public List<Admin_Patient> GetAdminPatient() 
+        {
+            string sql = $"select a.PatientCode,b.PatientName,b.PatientAge,b.PatientPhone,sum(a.InquiryPrice) PriceSum,count(*) InquiryNum from Inquiry a join patient b on a.PatientCode = b.PatientCode group by a.PatientCode,b.PatientName,b.PatientAge,b.PatientPhone";
+            return _db.TableToList<Admin_Patient>(_db.GetDateSet(sql).Tables[0]);
+        }
         #endregion
         public class LoginTel
         {

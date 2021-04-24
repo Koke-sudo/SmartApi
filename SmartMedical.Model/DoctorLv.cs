@@ -11,7 +11,7 @@ namespace SmartMedical.Model
     [Table("doctorlv")]
     public class DoctorLv
     {
-        public int DoctorId { get; set; }
+        public int DoctorLvId { get; set; }
         public string DoctorLvName { get; set; }
     }
 }

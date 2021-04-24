@@ -21,30 +21,30 @@ namespace SmartApi.Controllers
             _bll = bll;
             _logintel = logintel;
         }
-        [Route("doctorlogin"),HttpPost]
+        [Route("doctorlogin"), HttpPost]
         /// <summary>
         /// 医生端登录
         /// </summary>
         /// <param name="phone"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public IActionResult DoctorLogin(string phone,string password) 
+        public IActionResult DoctorLogin(string phone, string password)
         {
-            int h = _bll.DoctorLogin(phone,password);
-            return Ok(new { msg=h>0?"登录成功!":"账号或密码错误!",state=h>0?true:false});
+            int h = _bll.DoctorLogin(phone, password);
+            return Ok(new { msg = h > 0 ? "登录成功!" : "账号或密码错误!", state = h > 0 ? true : false });
         }
         /// <summary>
         /// 手机验证码
         /// </summary>
         /// <param name="phone">手机号</param>
         /// <returns></returns>
-        [Route("phone"),HttpPost]
-        public IActionResult Phone(string phone) 
+        [Route("phone"), HttpPost]
+        public IActionResult Phone(string phone)
         {
             Random r = new Random();
-            string code = r.Next(1000,9999).ToString();
-            var str = _logintel.sendSmsCode(phone,code);
-            return Ok(new { data=str,code=code});
+            string code = r.Next(1000, 9999).ToString();
+            var str = _logintel.sendSmsCode(phone, code);
+            return Ok(new { data = str, code = code });
         }
 
         /// <summary>
@@ -54,60 +54,83 @@ namespace SmartApi.Controllers
         /// <param name="password">密码</param>
         /// <returns></returns>
         [Route("zhuce"), HttpGet]
-        public IActionResult ZhuCe(string phone,string password) 
+        public IActionResult ZhuCe(string phone, string password)
         {
-
-            return Ok();
+            string msg = "";
+            bool state = false;
+            if (_bll.GetByPhone(phone) > 0)
+            {
+                msg = "手机号已注册!";
+            }
+            else
+            {
+                int h = _bll.InsertDoctorPhone(phone, password);
+                msg =  h> 0 ? "注册成功,请完善资料!" : "注册失败!";
+                state = h > 0 ? true : false;
+            }
+            return Ok(new { msg = msg, state = state });
         }
+        /// <summary>
+        /// 完善资料页面提交
+        /// </summary>
+        /// <param name="m"></param>
+        /// <returns></returns>
+        [Route("zhuce2"),HttpPost]
+        public IActionResult Zhuce2(InsertDoctor m) 
+        {
+            int h = _bll.UpdDoctorByPhone(m);
+            return Ok(new { msg=h>0?"完善成功!":"失败!",state=h>0?true:false});
+        }
+
         /// <summary>
         /// 获取医院列表
         /// </summary>
         /// <returns></returns>
         [Route("gethospital"), HttpGet]
-        public IActionResult GetHospital() 
+        public IActionResult GetHospital()
         {
             List<Hospital> list = _bll.GetHospital();
-            return Ok(new { data=list});
+            return Ok(new { data = list });
         }
         /// <summary>
         /// 获取医师等级
         /// </summary>
         /// <returns></returns>
-        [Route("getdoctorlv"),HttpGet]
-        public IActionResult GetDoctorLv() 
+        [Route("getdoctorlv"), HttpGet]
+        public IActionResult GetDoctorLv()
         {
             List<DoctorLv> list = _bll.GetDoctorLv();
-            return Ok(new { data=list});
+            return Ok(new { data = list });
         }
         /// <summary>
         /// 获取医生端诊断管理
         /// </summary>
         /// <returns></returns>
-        [Route("getdiagnose"),HttpGet]
-        public IActionResult GetDiagnose() 
+        [Route("getdiagnose"), HttpGet]
+        public IActionResult GetDiagnose()
         {
             List<Diagnose> list = _bll.GetDiagnose();
-            return Ok(new {data=list});
+            return Ok(new { data = list });
         }
         /// <summary>
         /// 获取直播列表
         /// </summary>
         /// <returns></returns>
-        [Route("getlives"),HttpGet]
-        public IActionResult GetLives() 
+        [Route("getlives"), HttpGet]
+        public IActionResult GetLives()
         {
             List<Live> list = _bll.GetLives();
-            return Ok(new { data=list});
+            return Ok(new { data = list });
         }
         /// <summary>
         /// 获取接诊台列表各个字段
         /// </summary>
         /// <returns></returns>
-        [Route("getinquiry"),HttpGet]
-        public IActionResult GetInquiry() 
+        [Route("getinquiry"), HttpGet]
+        public IActionResult GetInquiry()
         {
             List<GetInquiry> list = _bll.GetInquiry();
-            return Ok(new { data=list});
+            return Ok(new { data = list });
         }
     }
 }
