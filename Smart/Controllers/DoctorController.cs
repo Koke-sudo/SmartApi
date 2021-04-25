@@ -139,7 +139,12 @@ namespace SmartApi.Controllers
         [Route("gethealth"),HttpGet]
         public IActionResult GetHealth(string patientcode="") 
         {
+            
             List<GetHealth> list = _bll.GetHealth(patientcode);
+            if (!string.IsNullOrEmpty(patientcode)&&patientcode!="")
+            {
+                list = list.Where(s => s.PatientCode.Equals(patientcode)).ToList();
+            }
             return Ok(new { data=list});
         }
     }

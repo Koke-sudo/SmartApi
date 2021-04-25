@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SmartMedical.BLL;
+using SmartMedical.Model;
 using SmartMedical.Model.Join;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,26 @@ namespace Smart.Controllers
         public IActionResult GetAdminPatient() 
         {
             List<Admin_Patient> list = _bll.GetAdminPatient();
+            return Ok(new { data=list});
+        }
+        /// <summary>
+        /// 获取患者列表
+        /// </summary>
+        /// <returns></returns>
+        [Route("getpatients"), HttpGet]
+        public IActionResult GetPatients()
+        {
+            List<Patient> list = _bll.GetPatients();
+            return Ok(list);
+        }
+        /// <summary>
+        /// 获取管理员端直播列表
+        /// </summary>
+        /// <returns></returns>
+        [Route("getlives_admin"),HttpGet]
+        public IActionResult GetLives() 
+        {
+            List<GetLives_Admin> list = _bll.GetLives_Admin();
             return Ok(new { data=list});
         }
     }

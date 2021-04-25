@@ -52,7 +52,7 @@ namespace SmartMedical.Controllers
         /// <param name="phone"></param>
         /// <returns></returns>
         [Route("zhuce"),HttpPost]
-        public IActionResult Zhuce(string phone) 
+        public IActionResult Zhuce(string phone,string password) 
         {
             int h = 0;
             DataSet ds = _bll.ZhuCe(phone);
@@ -62,7 +62,7 @@ namespace SmartMedical.Controllers
             }
             else
             {
-                h = _bll.ZhuceIn(phone);
+                h = _bll.ZhuceIn(phone,password);
             }
             return Ok(new { msg=h>0?"注册成功！":"手机号已存在!",state=h>0?true:false});
         }
@@ -72,23 +72,13 @@ namespace SmartMedical.Controllers
         /// </summary>
         /// <param name="phone"></param>
         /// <returns></returns>
-        [Route("phoneyzm"),HttpPost]
+        [Route("phoneyzm"),HttpGet]
         public IActionResult PhoneYZM(string phone) 
         {
             Random r = new Random();
             string code = r.Next(1000,9999).ToString();
             var str = _logintel.sendSmsCode(phone,code);
             return Ok(new { data=str,code=code});
-        }
-        /// <summary>
-        /// 获取患者列表
-        /// </summary>
-        /// <returns></returns>
-        [Route("getpatients"),HttpGet]
-        public IActionResult GetPatients() 
-        {
-            List<Patient> list = _bll.GetPatients();
-            return Ok(list);
         }
     }
 }

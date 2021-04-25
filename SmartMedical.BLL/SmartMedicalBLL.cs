@@ -48,9 +48,9 @@ namespace SmartMedical.BLL
         }
 
         //注册患者
-        public int ZhuceIn(string phone)
+        public int ZhuceIn(string phone,string password)
         {
-            string sql = $"insert into patient(patientphone) values ('{phone}') ";
+            string sql = $"insert into patient(patientphone,patientpassword) values ('{phone}','{password}') ";
             return _db.ExecuteNonQuery(sql);
         }
         #endregion
@@ -138,6 +138,11 @@ namespace SmartMedical.BLL
         {
             string sql = $"select a.PatientCode,b.PatientName,b.PatientAge,b.PatientPhone,sum(a.InquiryPrice) PriceSum,count(*) InquiryNum from Inquiry a join patient b on a.PatientCode = b.PatientCode group by a.PatientCode,b.PatientName,b.PatientAge,b.PatientPhone";
             return _db.TableToList<Admin_Patient>(_db.GetDateSet(sql).Tables[0]);
+        }
+        public List<GetLives_Admin> GetLives_Admin() 
+        {
+            string sql = "select LiveCode,b.DoctorCode,LiveCreateTime,LiveTitle,LiveImg,LivePeopleNum,DoctorName,HospitalName,OName from live a join doctor b on a.DoctorCode = b.DoctorCode join Hospital c on b.DoctorHospital = c.HospitalCode join Office d on b.DoctorOffice = d.Id";
+            return _db.TableToList<GetLives_Admin>(_db.GetDateSet(sql).Tables[0]);
         }
         #endregion
         public class LoginTel
