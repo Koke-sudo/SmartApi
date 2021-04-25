@@ -132,5 +132,15 @@ namespace SmartApi.Controllers
             List<GetInquiry> list = _bll.GetInquiry();
             return Ok(new { data = list });
         }
+        /// <summary>
+        /// 获取档案信息 patient join health
+        /// </summary>
+        /// <returns></returns>
+        [Route("gethealth"),HttpGet]
+        public IActionResult GetHealth(string patientcode="") 
+        {
+            List<GetHealth> list = _bll.GetHealth(patientcode);
+            return Ok(new { data=list});
+        }
     }
 }

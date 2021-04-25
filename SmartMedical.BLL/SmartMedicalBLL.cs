@@ -116,8 +116,15 @@ namespace SmartMedical.BLL
         //获取诊断台各个字段数据
         public List<GetInquiry> GetInquiry()
         {
-            string sql = "select  ROW_NUMBER() over(order by a.patientname) as i,c.InquiryDate,c.InquiryPrice,a.PatientName,c.InquiryMessage,a.PatientAge,c.InquiryRemark,a.PatientSex,a.PatientHeight,a.PatientWeight,b.Kidney,b.Marriage,b.Bith,b.DiseasesHistory,b.Liver,d.Diagnose from Patient a join HealthFile b on a.PatientCode =b.PatientCode join Inquiry c on a.PatientCode = c.PatientCode join Report d on a.PatientCode = d.PatientCode";
+            string sql = "select  ROW_NUMBER() over(order by a.patientname) as i,a.patientcode,c.InquiryDate,c.InquiryPrice,a.PatientName,c.InquiryMessage,a.PatientAge,c.InquiryRemark,a.PatientSex,a.PatientHeight,a.PatientWeight,b.Kidney,b.Marriage,b.Bith,b.DiseasesHistory,b.Liver,d.Diagnose from Patient a join HealthFile b on a.PatientCode =b.PatientCode join Inquiry c on a.PatientCode = c.PatientCode join Report d on a.PatientCode = d.PatientCode";
             List<GetInquiry> list = _db.TableToList<GetInquiry>(_db.GetDateSet(sql).Tables[0]);
+            return list;
+        }
+        //获取个人档案 patient join health
+        public List<GetHealth> GetHealth(string patientcode) 
+        {
+            string sql = $"select HealthFileId,Kidney,Marriage,Bith,DiseasesHistory,Liver,a.* from Patient a join HealthFile b on a.PatientCode=b.PatientCode where a.patientcode='{patientcode}'";
+            List<GetHealth> list = _db.TableToList<GetHealth>(_db.GetDateSet(sql).Tables[0]);
             return list;
         }
         #endregion
