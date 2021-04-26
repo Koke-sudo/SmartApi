@@ -127,6 +127,13 @@ namespace SmartMedical.BLL
             List<GetHealth> list = _db.TableToList<GetHealth>(_db.GetDateSet(sql).Tables[0]);
             return list;
         }
+        //订单流水列表
+        public List<Orders_Doctor> GetOrders_Doctor() 
+        {
+            string sql = $"select * from doctororders";
+            List<Orders_Doctor> list = _db.TableToList<Orders_Doctor>(_db.GetDateSet(sql).Tables[0]);
+            return list;
+        }
         #endregion
 
 
@@ -139,6 +146,7 @@ namespace SmartMedical.BLL
             string sql = $"select a.PatientCode,b.PatientName,b.PatientAge,b.PatientPhone,sum(a.InquiryPrice) PriceSum,count(*) InquiryNum from Inquiry a join patient b on a.PatientCode = b.PatientCode group by a.PatientCode,b.PatientName,b.PatientAge,b.PatientPhone";
             return _db.TableToList<Admin_Patient>(_db.GetDateSet(sql).Tables[0]);
         }
+        //获取管理员端直播列表
         public List<GetLives_Admin> GetLives_Admin() 
         {
             string sql = "select LiveCode,b.DoctorCode,LiveCreateTime,LiveTitle,LiveImg,LivePeopleNum,DoctorName,HospitalName,OName from live a join doctor b on a.DoctorCode = b.DoctorCode join Hospital c on b.DoctorHospital = c.HospitalCode join Office d on b.DoctorOffice = d.Id";

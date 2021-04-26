@@ -65,7 +65,7 @@ namespace SmartApi.Controllers
             else
             {
                 int h = _bll.InsertDoctorPhone(phone, password);
-                msg =  h> 0 ? "注册成功,请完善资料!" : "注册失败!";
+                msg = h > 0 ? "注册成功,请完善资料!" : "注册失败!";
                 state = h > 0 ? true : false;
             }
             return Ok(new { msg = msg, state = state });
@@ -75,11 +75,11 @@ namespace SmartApi.Controllers
         /// </summary>
         /// <param name="m"></param>
         /// <returns></returns>
-        [Route("zhuce2"),HttpPost]
-        public IActionResult Zhuce2(InsertDoctor m) 
+        [Route("zhuce2"), HttpPost]
+        public IActionResult Zhuce2(InsertDoctor m)
         {
             int h = _bll.UpdDoctorByPhone(m);
-            return Ok(new { msg=h>0?"完善成功!":"失败!",state=h>0?true:false});
+            return Ok(new { msg = h > 0 ? "完善成功!" : "失败!", state = h > 0 ? true : false });
         }
 
         /// <summary>
@@ -136,15 +136,25 @@ namespace SmartApi.Controllers
         /// 获取档案信息 patient join health
         /// </summary>
         /// <returns></returns>
-        [Route("gethealth"),HttpGet]
-        public IActionResult GetHealth(string patientcode="") 
+        [Route("gethealth"), HttpGet]
+        public IActionResult GetHealth(string patientcode = "")
         {
-            
+
             List<GetHealth> list = _bll.GetHealth(patientcode);
-            if (!string.IsNullOrEmpty(patientcode)&&patientcode!="")
+            if (!string.IsNullOrEmpty(patientcode) && patientcode != "")
             {
                 list = list.Where(s => s.PatientCode.Equals(patientcode)).ToList();
             }
+            return Ok(new { data = list });
+        }
+        /// <summary>
+        /// 医生端订单流水列表
+        /// </summary>
+        /// <returns></returns>
+        [Route("getorders_doctor"),HttpGet]
+        public IActionResult GetOrders_Doctor()
+        {
+            List<Orders_Doctor> list = _bll.GetOrders_Doctor();
             return Ok(new { data=list});
         }
     }
