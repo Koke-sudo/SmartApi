@@ -35,7 +35,7 @@ namespace Smart.Controllers
         [Route("getpatients"), HttpGet]
         public IActionResult GetPatients()
         {
-            List<Patient> list = _bll.GetPatients();
+            List<Patient1> list = _bll.GetPatients();
             return Ok(list);
         }
         /// <summary>

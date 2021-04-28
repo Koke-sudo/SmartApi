@@ -10,7 +10,9 @@ namespace SmartMedical.Model.Join
     public class Diagnose
     {
         public DateTime InquiryDate { get; set; }
+        public string InquiryDateStr { get { return this.InquiryDate.ToString("yyyy-MM-dd"); } set { } }
         public float Price { get; set; }
         public int PatientNum { get; set; }
+        public int i { get; set; }
     }
 }

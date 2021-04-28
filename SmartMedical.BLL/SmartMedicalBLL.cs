@@ -1,4 +1,5 @@
-﻿using SmartMedical.DAL;
+﻿using Newtonsoft.Json;
+using SmartMedical.DAL;
 using SmartMedical.Model;
 using SmartMedical.Model.Join;
 using System;
@@ -22,8 +23,8 @@ namespace SmartMedical.BLL
         }
 
 
-        //患者模块
-        #region
+        
+        #region 患者模块
         //患者登录
         public int Login(string phone, string password)
         {
@@ -33,11 +34,11 @@ namespace SmartMedical.BLL
             return h;
         }
         //获取所有患者信息
-        public List<Patient> GetPatients()
+        public List<Patient1> GetPatients()
         {
             string sql = "select * from patient";
             DataSet ds = _db.GetDateSet(sql);
-            List<Patient> list = _db.TableToList<Patient>(ds.Tables[0]);
+            List<Patient1> list = _db.TableToList<Patient1>(ds.Tables[0]);
             return list;
         }
         //验证患者手机号是否存在
@@ -57,8 +58,8 @@ namespace SmartMedical.BLL
 
 
 
-        //医生模块
-        #region
+        
+        #region 医生模块
         //医生登录
         public int DoctorLogin(string phone, string password)
         {
@@ -102,7 +103,7 @@ namespace SmartMedical.BLL
         //诊断管理显示
         public List<Diagnose> GetDiagnose()
         {
-            string sql = $"select InquiryDate, sum(InquiryPrice) as Price,count(*) as PatientNum from Inquiry group by InquiryDate";
+            string sql = $"select ROW_NUMBER() over(order by InquiryDate) as i,InquiryDate, sum(InquiryPrice) as Price,count(*) as PatientNum from Inquiry group by InquiryDate";
             List<Diagnose> list = _db.TableToList<Diagnose>(_db.GetDateSet(sql).Tables[0]);
             return list;
         }
@@ -138,8 +139,8 @@ namespace SmartMedical.BLL
 
 
 
-        //管理员模块
-        #region
+        
+        #region 管理员模块
         //患者管理列表
         public List<Admin_Patient> GetAdminPatient() 
         {
@@ -152,6 +153,379 @@ namespace SmartMedical.BLL
             string sql = "select LiveCode,b.DoctorCode,LiveCreateTime,LiveTitle,LiveImg,LivePeopleNum,DoctorName,HospitalName,OName from live a join doctor b on a.DoctorCode = b.DoctorCode join Hospital c on b.DoctorHospital = c.HospitalCode join Office d on b.DoctorOffice = d.Id";
             return _db.TableToList<GetLives_Admin>(_db.GetDateSet(sql).Tables[0]);
         }
+        public int Login(Admin1 m)
+        {
+            string sql = $"select * from admin where adminname='{m.AdminName}' and adminpassword='{m.AdminPassWord}'";
+            DataSet ds = _db.GetDateSet(sql);
+            int h = ds.Tables[0].Rows.Count;
+            return h;
+        }
+        public List<Patient1> GetShow() //患者显示
+        {
+            string sql = "select a.PatientCode,b.PatientId,b.PatientName,b.PatientAge,b.PatientPhone,sum(a.InquiryPrice) PriceSum,count(*) InquiryNum from Inquiry a join patient b on a.PatientCode=b.PatientCode group by a.PatientCode,b.PatientId,b.PatientName,b.PatientAge,b.PatientPhone";
+            DataSet dt = _db.GetDateSet(sql);
+            List<Patient1> list = _db.TableToList<Patient1>(dt.Tables[0]);
+            return list;
+        }
+        public List<Patient1> GetXians(int sid)//患者显示查看
+        {
+            string sql = $"select * from Patient a join  Doctor b on a.DoctorId=b.DoctorId join DoctorLv c on b.DoctorLv=c.DoctorLvId join Hospital d on b.DoctorHospital=d.HospitalCode join Inquiry e on a.patientcode=e.PatientCode   where PatientId=({sid})";
+            DataSet dt = _db.GetDateSet(sql);
+            List<Patient1> list = _db.TableToList<Patient1>(dt.Tables[0]);
+            return list;
+        }
+        public List<Patient1> GetFanTian(int sid)
+        {
+            string sql = $"select *from HealthFile join Patient on HealthFile.PatientCode=Patient.PatientCode join Inquiry on Inquiry.PatientCode=Patient.PatientCode join Report on Report.PatientCode=Patient.PatientCode where Patient.PatientId=({sid})";
+            DataSet dt = _db.GetDateSet(sql);
+            List<Patient1> list = _db.TableToList<Patient1>(dt.Tables[0]);
+            return list;
+        }
+        public List<Doctor> GetDoctor(string name = "")
+        {
+            string sql = $"select * from Doctor where 1=1";
+            if (!string.IsNullOrEmpty(name))
+            {
+                sql = sql + $"and UserPhone='{name}'";
+            }
+            else
+            {
+                sql = sql + $"  and   DoctorName like '&{name}&'";
+            }
+
+            DataSet dt = _db.GetDateSet(sql);
+            List<Doctor> list = _db.TableToList<Doctor>(dt.Tables[0]);
+            return list;
+
+        }
+        public List<Doctor> GetDoctor(int id = -1, string name = "", int tid = -1, int age = -1)
+        {
+            string sql = $"select * from Doctor join Hospital on Doctor.DoctorHospital=Hospital.HospitalCode join DoctorLv on Doctor.DoctorLv=DoctorLv.DoctorLvId  where 1=1";
+            if (id != -1)
+            {
+                sql = sql + $" and State={id}";
+            }
+            if (!string.IsNullOrEmpty(name))
+            {
+                sql = sql + $" and Hospital.HospitalName like '%{name}%'";
+            }
+            if (tid != -1)
+            {
+                sql = sql + $" and DoctorLv={tid}";
+            }
+            if (age != -1)
+            {
+                sql = sql + $" and DoctorYear={age}";
+            }
+            DataSet dt = _db.GetDateSet(sql);
+            List<Doctor> list = _db.TableToList<Doctor>(dt.Tables[0]);
+            return list;
+        }
+        public List<Patient1> GetPatient(string name = "")
+        {
+            string sql = $"select * from Patient where 1=1";
+            if (!string.IsNullOrEmpty(name))
+            {
+                sql = sql + $" and PatientPhone='{name}' or   PatientName like '%{name}%'";
+            }
+            DataSet dt = _db.GetDateSet(sql);
+            List<Patient1> list = _db.TableToList<Patient1>(dt.Tables[0]);
+            return list;
+        }
+
+        public List<GType> GTypes(string name, int id = -1)
+        {
+            string sql = $"select * from GType where 1=1";
+            if (!string.IsNullOrEmpty(name))
+            {
+                sql = sql + $" and TName like '%{name}%'";
+            }
+            if (id != -1)
+            {
+                sql = sql + $" and Tid={id}";
+            }
+            DataSet dt = _db.GetDateSet(sql);
+            List<GType> list = _db.TableToList<GType>(dt.Tables[0]);
+            return list;
+
+        }
+        public List<GType> GTypes(int id = -1)
+        {
+            string sql = $"select * from GType where Tid={id}";
+            DataSet dt = _db.GetDateSet(sql);
+            List<GType> list = _db.TableToList<GType>(dt.Tables[0]);
+            return list;
+        }
+
+        public List<Patient1> PatientFt(int id)
+        {
+            string sql = $"select * from Patient where PatientId={id}";
+            DataSet dt = _db.GetDateSet(sql);
+            List<Patient1> list = _db.TableToList<Patient1>(dt.Tables[0]);
+            return list;
+        }
+        public int PatientUpd(Patient1 s)
+        {
+
+            string sql = $"update Patient set PatientCode='{s.PatientCode}',PatientName='{s.PatientName}',PatientPhone='{s.PatientPhone}',PatientPassWord='{s.PatientPassWord}' where PatientId={s.PatientId}";
+            int h = _db.ExecuteNonQuery(sql);
+            return h;
+        }
+        public List<DoctorLv> GetDoctorLv1()
+        {
+            string sql = $"select * from DoctorLv where 1=1";
+            DataSet dt = _db.GetDateSet(sql);
+            List<DoctorLv> list = _db.TableToList<DoctorLv>(dt.Tables[0]);
+            return list;
+        }
+
+        public int DoctorReason(Doctor s)
+        {
+            string sql = $"update Doctor set DoctorReason='{s.DoctorReason}',State={s.State} where DoctorId={s.DoctorId}";
+            int h = _db.ExecuteNonQuery(sql);
+            return h;
+        }
+        public List<Order> GetOrders(string name = "", int id = -1, int tid = -1, int nid = -1)
+        {
+            string sql = $" select * from AdmintOrders join Patient on AdmintOrders.PatientCode=Patient.PatientCode join AdmintOrderState on AdmintOrders.OrderState=AdmintOrderState.OrderStateId where 1=1";
+            if (!string.IsNullOrEmpty(name))
+            {
+                sql = sql + $" and Orders.OrderId={name}";
+            }
+            if (id != -1)
+            {
+                sql = sql + $" and Orders.OrderState={id}";
+            }
+            if (tid != -1)
+            {
+                sql = sql + $" and Orders.PaymentState={tid}";
+            }
+            if (nid != -1)
+            {
+                sql = sql + $" and Order.DeliverState={nid}";
+            }
+            DataSet dt = _db.GetDateSet(sql);
+            List<Order> list = _db.TableToList<Order>(dt.Tables[0]);
+            return list;
+        }
+
+        public List<Goods> GetGoods(string name = "", int id = -1, int tid = -1)
+        {
+            string sql = $"select * from Goods join GType on Goods.GoodType=GType.TId where 1=1";
+            if (!string.IsNullOrEmpty(name))
+            {
+                sql = sql + $" and Goods.GoodName like '%{name}%'";
+            }
+            if (id != -1)
+            {
+                sql = sql + $" and Goods.GoodType={id}";
+            }
+            if (tid != -1)
+            {
+                sql = sql + $" and Goods.GoodState={tid}";
+            }
+            DataSet dt = _db.GetDateSet(sql);
+            List<Goods> list = _db.TableToList<Goods>(dt.Tables[0]);
+            return list;
+        }
+        public int GoodShelves(int id)
+        {
+            string sql = $"update Goods set GoodState=1 where GoodId={id}";
+            int h = _db.ExecuteNonQuery(sql);
+            return h;
+        }
+        public int GoodShelf(int id)
+        {
+            string sql = $"update Goods set GoodState=0 where GoodId={id}";
+            int h = _db.ExecuteNonQuery(sql);
+            return h;
+        }
+        public List<Goods> GoodReverse(int id)
+        {
+            string sql = $"select * from Goods where GoodId={id}";
+            DataSet dt = _db.GetDateSet(sql);
+            List<Goods> list = _db.TableToList<Goods>(dt.Tables[0]);
+            return list;
+        }
+        public int GoodUpd(Goods s)
+        {
+            string sql = $"update Goods set GoodName='{s.GoodName}',GoodImg='{s.GoodImg}',GoodPrice={s.GoodPrice},GoddsBrief='{s.GoddsBrief}',GoddsService='{s.GoddsService}' where GoodId={s.GoodId}";
+            int list = _db.ExecuteNonQuery(sql);
+            return list;
+        }
+        public int DoctorDel(int id)
+        {
+            string sql = $"delete Doctor where DoctorId={id}";
+            int h = _db.ExecuteNonQuery(sql);
+            return h;
+        }
+        public List<Doctor> DoctorFt(int id)
+        {
+            string sql = $"select * from Doctor join Hospital on Doctor.DoctorHospital=Hospital.HospitalCode join DoctorLv on Doctor.DoctorLv=DoctorLv.DoctorLvId  where  DoctorId={id}";
+            DataSet dt = _db.GetDateSet(sql);
+            List<Doctor> list = _db.TableToList<Doctor>(dt.Tables[0]);
+            return list;
+        }
+
+        public int DoctorAdd(Doctor s)
+        {
+            string sql = $"insert into Doctor(DoctorCode,DoctorName,DoctorHospital,DoctorLv,UserPhone,UserPassword) values('{s.DoctorCode}','{s.DoctorName}',{s.DoctorHospital},{s.DoctorLv},'{s.UserPhone}','{s.UserPassword}')";
+            int h = _db.ExecuteNonQuery(sql);
+            return h;
+        }
+        public int DoctorUpd(Doctor s)
+        {
+
+            string sql = $"update Doctor set DoctorCode='{s.DoctorCode}',DoctorName='{s.DoctorName}',DoctorHospital={s.DoctorHospital},DoctorLv={s.DoctorLv},UserPhone='{s.UserPhone}',UserPassword='{s.UserPassword}' where DoctorId={s.DoctorId}";
+            int h = _db.ExecuteNonQuery(sql);
+            return h;
+        }
+        #region//方法
+        public List<Seckill> list(string name = "", int id = -1)
+        {
+            string sql = $"select * from Seckill where 1=1 ";
+            if (!string.IsNullOrEmpty(name))
+            {
+                sql = sql + $" and SeckillName like '%{name}%'";
+            }
+            if (id != -1)
+            {
+                sql = sql + $" and seckillId={id}";
+            }
+            var ds = _db.GetDateSet(sql);
+            var json = JsonConvert.SerializeObject(ds.Tables[0]);
+            List<Seckill> list = JsonConvert.DeserializeObject<List<Seckill>>(json);
+            return list;
+        }
+        public List<Goods> goods(int state = -1, int id = -1, string name = "")
+        {
+            string sql = $"select * from goods a join Gtype b on a.GoodType=b.TId where 1=1 ";
+            if (id != -1)
+            {
+                sql = sql + $" and SeckillId={id}";
+            }
+            if (!string.IsNullOrEmpty(name))
+            {
+                sql = sql + $" and GoodName like '%{name}%'";
+            }
+            if (state != -1)
+            {
+                sql = sql + $" and GoodState={state}";
+            }
+            var ds = _db.GetDateSet(sql);
+            var json = JsonConvert.SerializeObject(ds.Tables[0]);
+            List<Goods> list = JsonConvert.DeserializeObject<List<Goods>>(json);
+            return list;
+        }
+        public int UpdateState(int goodseckill, int id)//小修改
+        {
+            string sql = $"update Goods set GoodState=GoodState-1,GoodSeckill={goodseckill} where GoodId={id}";
+            int h = _db.ExecuteNonQuery(sql);
+            return h;
+        }
+        public int SeckillUpdate(int id)
+        {
+            string sql = $"update seckill set seckillstate=seckillstate-1 where seckillid={id}";
+            int h = _db.ExecuteNonQuery(sql);
+            return h;
+        }
+        public int Delete(int id)//删除
+        {
+            string sql = $"delete from Goods where GoodId={id}";
+            int h = _db.ExecuteNonQuery(sql);
+            return h;
+        }
+        public List<Goods> GoodFt(int id)   //商品反填
+        {
+            string sql = $"select * from Goods where GoodId={id}";
+            var ds = _db.GetDateSet(sql);
+            var json = JsonConvert.SerializeObject(ds.Tables[0]);
+            List<Goods> list = JsonConvert.DeserializeObject<List<Goods>>(json);
+            return list;
+
+        }
+        public int GoodUpdate(Goods g)   //修改商品
+        {
+            string sql = $"update Goods set GoodCode='{g.GoodCode}',GoodName='{g.GoodName}',GoodImg='{g.GoodImg}',GoodPrice={g.GoodPrice},GoodSeckill={g.GoodSeckill} where GoodId={g.GoodId}";
+            int h = _db.ExecuteNonQuery(sql);
+            return h;
+        }
+        public int SeckillDel(int id)
+        {
+            string sql = $"delete from seckill where seckillid={id}";
+            int h = _db.ExecuteNonQuery(sql);
+            return h;
+        }
+        public int SeckillAdd(Seckill s)
+        {
+            string sql = $"insert into seckill(SeckillName,SeckillSatrt,SeckillEnd,SeckillState) values('{s.SeckillName}','{s.SeckillSatrt}','{s.SeckillEnd}',{(s.SeckillState == true ? 1 : 0)})";
+            int h = _db.ExecuteNonQuery(sql);
+            return h;
+        }
+        public int SeckillUpdate(Seckill s)
+        {
+            string sql = $"update seckill set SeckillName='{s.SeckillName}',SeckillSatrt='{s.SeckillSatrt}',SeckillEnd='{s.SeckillEnd}' where SeckillId={s.SeckillId}";
+            int h = _db.ExecuteNonQuery(sql);
+            return h;
+        }
+        #region//绑定
+        //绑定医生等级
+        public List<DoctorLv> BangDoctorLv()
+        {
+            string sql = $"select * from DoctorLv";
+            var ds = _db.GetDateSet(sql);
+            var json = JsonConvert.SerializeObject(ds.Tables[0]);
+            List<DoctorLv> list = JsonConvert.DeserializeObject<List<DoctorLv>>(json);
+            return list;
+        }
+        //绑定医生所属医院
+        public List<Hospital> BangHospitalcs()
+        {
+            string sql = $"select * from Hospitalcs";
+            var ds = _db.GetDateSet(sql);
+            var json = JsonConvert.SerializeObject(ds.Tables[0]);
+            List<Hospital> list = JsonConvert.DeserializeObject<List<Hospital>>(json);
+            return list;
+        }
+        #endregion
+
+        #region//方法
+        public List<Doctor> List(string Yiyuan = "", string Office = "", int id = -1, string YiShi = "", string Patient = "", int patientid = -1)//显示医生列表
+        {
+            string sql = $"select * from doctor a join DoctorLv b on a.DoctorLv = b.DoctorLvId join Hospital c on a.DoctorHospital = c.HospitalCode  join Office d on a.DoctorOffice = d.Id  join Patient e on  a.DoctorId = e.DoctorId where 1 = 1 ";
+            if (!string.IsNullOrEmpty(Yiyuan))
+            {
+                sql = sql + $" and HospitalName like '%{Yiyuan}%'";
+            }
+            if (!string.IsNullOrEmpty(Office))
+            {
+                sql = sql + $" and OName like '%{Office}%'";
+            }
+            if (id != -1)
+            {
+                sql = sql + $" and DoctorLv={id}";
+            }
+            if (!string.IsNullOrEmpty(YiShi))
+            {
+                sql = sql + $" and DoctorName like '%{YiShi}%'";
+            }
+            if (!string.IsNullOrEmpty(Patient))
+            {
+                sql = sql + $" and PatientName like '%{Patient}%'";
+            }
+            if (id != -1)
+            {
+                sql = sql + $" and Patientid={patientid}";
+            }
+            var ds = _db.GetDateSet(sql);
+
+            var json = JsonConvert.SerializeObject(ds.Tables[0]);
+            List<Doctor> list = JsonConvert.DeserializeObject<List<Doctor>>(json);
+            return list;
+        }
+        #endregion
+        #endregion
+
         #endregion
         public class LoginTel
         {

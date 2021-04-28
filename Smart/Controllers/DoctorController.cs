@@ -157,5 +157,36 @@ namespace SmartApi.Controllers
             List<Orders_Doctor> list = _bll.GetOrders_Doctor();
             return Ok(new { data=list});
         }
+        /// <summary>
+        /// 医师管理的所有查询、显示
+        /// </summary>
+        /// <param name="YiYuan"></param>
+        /// <param name="Office"></param>
+        /// <param name="id"></param>
+        /// <param name="YiShi"></param>
+        /// <param name="Patient"></param>
+        /// <param name="patientid"></param>
+        /// <param name="pageindex"></param>
+        /// <param name="pagesize"></param>
+        /// <returns></returns>
+        [Route("initdate"), HttpGet]
+        public IActionResult Initdate(string YiYuan = "", string Office = "", int id = -1, string YiShi = "", string Patient = "", int patientid = -1, int pageindex = 1, int pagesize = 3)
+        {
+            var list = _bll.List(YiYuan, Office, id, YiShi, Patient, patientid);
+            int count = list.Count;
+            int pagecount = (int)Math.Ceiling(count * 1.0 / pagesize);
+
+            var _list = list.Skip((pageindex - 1) * pagesize).Take(pagesize).ToList();
+            return Ok(new
+            {
+                data = _list,
+                pages = new
+                {
+                    pro = pageindex > 1 ? pageindex - 1 : 1,
+                    next = pageindex < pagecount ? pageindex + 1 : pagecount,
+                    last = pagecount
+                }
+            }); ;
+        }
     }
 }

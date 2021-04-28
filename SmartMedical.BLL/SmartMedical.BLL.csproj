@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SmartMedical.DAL\SmartMedical.DAL.csproj" />
     <ProjectReference Include="..\SmartMedical.Model\SmartMedical.Model.csproj" />
   </ItemGroup>
