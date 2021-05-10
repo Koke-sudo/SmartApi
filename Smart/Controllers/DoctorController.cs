@@ -117,9 +117,9 @@ namespace SmartApi.Controllers
         /// </summary>
         /// <returns></returns>
         [Route("getlives"), HttpGet]
-        public IActionResult GetLives()
+        public IActionResult GetLives(string liveName)
         {
-            List<Live> list = _bll.GetLives();
+            List<Live> list = _bll.GetLives(liveName);
             return Ok(new { data = list });
         }
         /// <summary>

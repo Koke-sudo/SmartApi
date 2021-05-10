@@ -108,9 +108,13 @@ namespace SmartMedical.BLL
             return list;
         }
         //直播列表
-        public List<Live> GetLives()
+        public List<Live> GetLives(string liveName)
         {
-            string sql = "select * from live";
+            string sql = "select * from live where 1=1";
+            if (!string.IsNullOrEmpty(liveName))
+            {
+                sql = sql + $" and livetitle like '%{liveName}%'";
+            }
             List<Live> list = _db.TableToList<Live>(_db.GetDateSet(sql).Tables[0]);
             return list;
         }

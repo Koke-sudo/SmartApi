@@ -132,7 +132,7 @@ namespace SmartMedical.Controllers
             int h = _bll.GoodUpd(s);
             return Ok(new { count = h });
         }
-        [Route("Pinsert"),HttpGet]
+        [Route("Pinsert"),HttpPost]
         public IActionResult Pinsert()
         {
             var files = Request.Form.Files;

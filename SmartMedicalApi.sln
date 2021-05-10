@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartMedical.BLL", "SmartMe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartMedical.DAL", "SmartMedical.DAL\SmartMedical.DAL.csproj", "{1860AF1E-774C-4E00-94FB-DD8EC59CC7D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smart", "Smart\Smart.csproj", "{8DA247F3-999C-4E77-A373-4F45717AE271}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Smart", "Smart\Smart.csproj", "{8DA247F3-999C-4E77-A373-4F45717AE271}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{B18372AB-EC85-4F74-82C3-C8D66289E2B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{8DA247F3-999C-4E77-A373-4F45717AE271}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DA247F3-999C-4E77-A373-4F45717AE271}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DA247F3-999C-4E77-A373-4F45717AE271}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B18372AB-EC85-4F74-82C3-C8D66289E2B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B18372AB-EC85-4F74-82C3-C8D66289E2B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B18372AB-EC85-4F74-82C3-C8D66289E2B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B18372AB-EC85-4F74-82C3-C8D66289E2B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
