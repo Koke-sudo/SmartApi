@@ -10,6 +10,7 @@ namespace SmartMedical.Model
         public int OrderId { get; set; }
         public DateTime OrderCreateTime { get; set; }
         public string OrderCode { get; set; }
+        public int ShouRu { get; set; } = 0;
         public bool OrderType { get; set; }
         public int OrderPrice { get; set; }
     }

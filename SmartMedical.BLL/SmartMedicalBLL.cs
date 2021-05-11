@@ -23,7 +23,7 @@ namespace SmartMedical.BLL
         }
 
 
-        
+
         #region 患者模块
         //患者登录
         public int Login(string phone, string password)
@@ -49,7 +49,7 @@ namespace SmartMedical.BLL
         }
 
         //注册患者
-        public int ZhuceIn(string phone,string password)
+        public int ZhuceIn(string phone, string password)
         {
             string sql = $"insert into patient(patientphone,patientpassword) values ('{phone}','{password}') ";
             return _db.ExecuteNonQuery(sql);
@@ -58,7 +58,7 @@ namespace SmartMedical.BLL
 
 
 
-        
+
         #region 医生模块
         //医生登录
         public int DoctorLogin(string phone, string password)
@@ -68,20 +68,20 @@ namespace SmartMedical.BLL
             return ds.Tables[0].Rows.Count;
         }
         //医生注册 先查有没有此手机号
-        public int GetByPhone(string phone) 
+        public int GetByPhone(string phone)
         {
             string sql = $"select * from doctor where userphone ='{phone}'";
             DataSet ds = _db.GetDateSet(sql);
             return ds.Tables[0].Rows.Count;
         }
         //若不存在此手机号则插入此用户数据  带密码
-        public int InsertDoctorPhone(string phone,string password) 
+        public int InsertDoctorPhone(string phone, string password)
         {
             string sql = $"insert into doctor (userphone,userpassword) values('{phone}','{password}')";
             return _db.ExecuteNonQuery(sql);
         }
         //注册第二步 完善资料
-        public int UpdDoctorByPhone(InsertDoctor m) 
+        public int UpdDoctorByPhone(InsertDoctor m)
         {
             string sql = $"update doctor set doctorname='{m.DoctorName}',doctorlv={m.DoctorLv},doctoridcard='{m.DoctorIdCard}',doctorhospital='{m.DoctorHospital}',doctoridcardimg='{m.DoctorIdCardImg}',doctorzgzs='{m.DoctorZgzs}',doctoryyzs='{m.DoctorYyzs}' where userphone='{m.DoctorPhone}'";
             return _db.ExecuteNonQuery(sql);
@@ -121,38 +121,45 @@ namespace SmartMedical.BLL
         //获取诊断台各个字段数据
         public List<GetInquiry> GetInquiry()
         {
-            string sql = "select  ROW_NUMBER() over(order by a.patientname) as i,a.patientcode,c.InquiryDate,c.InquiryPrice,a.PatientName,c.InquiryMessage,a.PatientAge,c.InquiryRemark,a.PatientSex,a.PatientHeight,a.PatientWeight,b.Kidney,b.Marriage,b.Bith,b.DiseasesHistory,b.Liver,d.Diagnose from Patient a join HealthFile b on a.PatientCode =b.PatientCode join Inquiry c on a.PatientCode = c.PatientCode join Report d on a.PatientCode = d.PatientCode";
+            string sql = "select  ROW_NUMBER() over(order by a.patientname) as i,a.patientcode,c.InquiryDate,c.InquiryPrice,a.PatientName,a.patientPhone,c.InquiryMessage,a.PatientAge,c.InquiryRemark,a.PatientSex,a.PatientHeight,a.PatientWeight,b.Kidney,b.Marriage,b.Bith,b.DiseasesHistory,b.Liver,d.Diagnose from Patient a join HealthFile b on a.PatientCode =b.PatientCode join Inquiry c on a.PatientCode = c.PatientCode join Report d on a.PatientCode = d.PatientCode";
             List<GetInquiry> list = _db.TableToList<GetInquiry>(_db.GetDateSet(sql).Tables[0]);
             return list;
         }
         //获取个人档案 patient join health
-        public List<GetHealth> GetHealth(string patientcode) 
+        public List<GetHealth> GetHealth(string patientcode)
         {
             string sql = $"select HealthFileId,Kidney,Marriage,Bith,DiseasesHistory,Liver,a.* from Patient a join HealthFile b on a.PatientCode=b.PatientCode where a.patientcode='{patientcode}'";
             List<GetHealth> list = _db.TableToList<GetHealth>(_db.GetDateSet(sql).Tables[0]);
             return list;
         }
         //订单流水列表
-        public List<Orders_Doctor> GetOrders_Doctor() 
+        public List<Orders_Doctor> GetOrders_Doctor(string starttime, string endtime)
         {
-            string sql = $"select * from doctororders";
+            string sql = $"select * from doctororders where OrderCreateTime between '{starttime}' and' {endtime}'";
             List<Orders_Doctor> list = _db.TableToList<Orders_Doctor>(_db.GetDateSet(sql).Tables[0]);
+            if (list.Count > 0)
+            {
+                foreach (var item in list)
+                {
+                    list[0].ShouRu += item.OrderPrice;
+                }
+            }
             return list;
         }
         #endregion
 
 
 
-        
+
         #region 管理员模块
         //患者管理列表
-        public List<Admin_Patient> GetAdminPatient() 
+        public List<Admin_Patient> GetAdminPatient()
         {
             string sql = $"select a.PatientCode,b.PatientName,b.PatientAge,b.PatientPhone,sum(a.InquiryPrice) PriceSum,count(*) InquiryNum from Inquiry a join patient b on a.PatientCode = b.PatientCode group by a.PatientCode,b.PatientName,b.PatientAge,b.PatientPhone";
             return _db.TableToList<Admin_Patient>(_db.GetDateSet(sql).Tables[0]);
         }
         //获取管理员端直播列表
-        public List<GetLives_Admin> GetLives_Admin() 
+        public List<GetLives_Admin> GetLives_Admin()
         {
             string sql = "select LiveCode,b.DoctorCode,LiveCreateTime,LiveTitle,LiveImg,LivePeopleNum,DoctorName,HospitalName,OName from live a join doctor b on a.DoctorCode = b.DoctorCode join Hospital c on b.DoctorHospital = c.HospitalCode join Office d on b.DoctorOffice = d.Id";
             return _db.TableToList<GetLives_Admin>(_db.GetDateSet(sql).Tables[0]);

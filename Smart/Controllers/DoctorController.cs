@@ -127,9 +127,15 @@ namespace SmartApi.Controllers
         /// </summary>
         /// <returns></returns>
         [Route("getinquiry"), HttpGet]
-        public IActionResult GetInquiry()
+        public IActionResult GetInquiry(string patientNameOrPhone="")
         {
+            
             List<GetInquiry> list = _bll.GetInquiry();
+            int count = list.Count;
+            if (!string.IsNullOrEmpty(patientNameOrPhone))
+            {
+                list = list.Where(s => s.PatientName.Contains(patientNameOrPhone)||s.PatientPhone.Contains(patientNameOrPhone)).ToList();
+            }
             return Ok(new { data = list });
         }
         /// <summary>
@@ -152,9 +158,9 @@ namespace SmartApi.Controllers
         /// </summary>
         /// <returns></returns>
         [Route("getorders_doctor"),HttpGet]
-        public IActionResult GetOrders_Doctor()
+        public IActionResult GetOrders_Doctor(string starttime="",string endtime="")
         {
-            List<Orders_Doctor> list = _bll.GetOrders_Doctor();
+            List<Orders_Doctor> list = _bll.GetOrders_Doctor(starttime,endtime);
             return Ok(new { data=list});
         }
         /// <summary>

@@ -79,7 +79,6 @@ namespace SmartMedical.DAL
                     WriteLog(ex.ToString());
                     throw;
                 }
-
             }
         }
 
@@ -170,7 +169,7 @@ namespace SmartMedical.DAL
 
 
         }
-
+        //日志
         public static void WriteLog(string strLog)
         {
             string sFilePath = "c:\\" + DateTime.Now.ToString("yyyyMM");

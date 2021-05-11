@@ -11,6 +11,8 @@ namespace SmartMedical.Model.Join
         public string PatientCode { get; set; }
         public string Kidney { get; set; }
         public string Marriage { get; set; }
+        public DateTime CreateDate{ get; set; }
+        public string CreateDateStr{ get { return this.CreateDate.ToString("yyyy-MM-dd"); } set { } }
         public string Bith { get; set; }
         public string DiseasesHistory { get; set; }
         public string PatientName { get; set; }

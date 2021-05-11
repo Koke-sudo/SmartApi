@@ -13,6 +13,7 @@ namespace SmartMedical.Model.Join
         public string InquiryDateStr { get { return this.InquiryDate.ToString("yyyy-MM-dd"); } set { } }
         public int InquiryPrice { get; set; }
         public string PatientName { get; set; }
+        public string PatientPhone { get; set; }
         public bool PatientSex { get; set; }
         public string PatientSexStr { get { return this.PatientSex == true ? "男" : "女"; } set { } }
         public string InquiryMessage { get; set; }
