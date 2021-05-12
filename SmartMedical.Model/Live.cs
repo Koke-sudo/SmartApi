@@ -9,6 +9,7 @@ namespace SmartMedical.Model
     /// </summary>
     public class Live
     {
+        public int i { get; set; }
         public int LiveId { get; set; }
         public string LiveImg { get; set; }
         public string LiveTitle { get; set; }

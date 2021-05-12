@@ -127,7 +127,7 @@ namespace SmartApi.Controllers
         /// </summary>
         /// <returns></returns>
         [Route("getinquiry"), HttpGet]
-        public IActionResult GetInquiry(string patientNameOrPhone="")
+        public IActionResult GetInquiry(string patientNameOrPhone="",int state=1)
         {
             
             List<GetInquiry> list = _bll.GetInquiry();
@@ -136,6 +136,7 @@ namespace SmartApi.Controllers
             {
                 list = list.Where(s => s.PatientName.Contains(patientNameOrPhone)||s.PatientPhone.Contains(patientNameOrPhone)).ToList();
             }
+            list = list.Where(s => s.InquiryState == (state==1?true:false)).ToList();
             return Ok(new { data = list });
         }
         /// <summary>
@@ -163,6 +164,39 @@ namespace SmartApi.Controllers
             List<Orders_Doctor> list = _bll.GetOrders_Doctor(starttime,endtime);
             return Ok(new { data=list});
         }
+        /// <summary>
+        /// 根据日期获取诊断列表
+        /// </summary>
+        /// <returns></returns>
+        [Route("getinquirybydate"),HttpGet]
+        public IActionResult GetInquiryByDate(string date) 
+        {
+            List<GetInquiryByDate> list = _bll.GetInquiryByDate(date);
+            return Ok(new {data=list });
+        }
+        /// <summary>
+        /// 查询哪一天的所有评价
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        [Route("getcommentbydate"),HttpGet]
+        public IActionResult GetCommentByDate(string date) 
+        {
+            List<GetCommentByDate> list = _bll.GetCommentByDate(date);
+            return Ok(new { data=list});
+        }
+        /// <summary>
+        /// 查询医生余额
+        /// </summary>
+        /// <param name="DoctorCode"></param>
+        /// <returns></returns>
+        [Route("getwalletbydoctorcode"),HttpGet]
+        public IActionResult GetWalletByDoctorCode(string DoctorCode) 
+        {
+            List<Wallet_Doctor> list = _bll.GetWalletByDoctorCode(DoctorCode);
+            return Ok(new { data=list});
+        }
+
         /// <summary>
         /// 医师管理的所有查询、显示
         /// </summary>

@@ -110,7 +110,7 @@ namespace SmartMedical.BLL
         //直播列表
         public List<Live> GetLives(string liveName)
         {
-            string sql = "select * from live where 1=1";
+            string sql = "select ROW_NUMBER() over(order by LiveId) i,* from live where 1=1";
             if (!string.IsNullOrEmpty(liveName))
             {
                 sql = sql + $" and livetitle like '%{liveName}%'";
@@ -121,7 +121,7 @@ namespace SmartMedical.BLL
         //获取诊断台各个字段数据
         public List<GetInquiry> GetInquiry()
         {
-            string sql = "select  ROW_NUMBER() over(order by a.patientname) as i,a.patientcode,c.InquiryDate,c.InquiryPrice,a.PatientName,a.patientPhone,c.InquiryMessage,a.PatientAge,c.InquiryRemark,a.PatientSex,a.PatientHeight,a.PatientWeight,b.Kidney,b.Marriage,b.Bith,b.DiseasesHistory,b.Liver,d.Diagnose from Patient a join HealthFile b on a.PatientCode =b.PatientCode join Inquiry c on a.PatientCode = c.PatientCode join Report d on a.PatientCode = d.PatientCode";
+            string sql = "select  ROW_NUMBER() over(order by a.patientname) as i,a.patientcode,c.InquiryComment,c.InquiryState,c.InquiryDate,c.InquiryPrice,a.PatientName,a.patientPhone,c.InquiryMessage,a.PatientAge,c.InquiryRemark,a.PatientSex,a.createdate,a.PatientHeight,a.PatientWeight,b.Kidney,b.Marriage,b.Bith,b.DiseasesHistory,b.Liver,d.Diagnose from Patient a join HealthFile b on a.PatientCode =b.PatientCode join Inquiry c on a.PatientCode = c.PatientCode join Report d on a.PatientCode = d.PatientCode";
             List<GetInquiry> list = _db.TableToList<GetInquiry>(_db.GetDateSet(sql).Tables[0]);
             return list;
         }
@@ -144,6 +144,27 @@ namespace SmartMedical.BLL
                     list[0].ShouRu += item.OrderPrice;
                 }
             }
+            return list;
+        }
+        //获取诊断列表
+        public List<GetInquiryByDate> GetInquiryByDate(string date = "")
+        {
+            string sql = $"select ROW_NUMBER() over(order by a.patientcode) i,a.PatientCode,a.InquiryDate,a.Diagnose,InquiryPrice,PatientName,InquiryRemark,PatientAge,a.InquiryMessage,a.InquiryComment from inquiry a join Patient b on a.PatientCode = b.PatientCode where inquirydate = '{date}'";
+            List<GetInquiryByDate> list = _db.TableToList<GetInquiryByDate>(_db.GetDateSet(sql).Tables[0]);
+            return list;
+        }
+        //根据哪一天查询评价
+        public List<GetCommentByDate> GetCommentByDate(string date = "")
+        {
+            string sql = $" select ROW_NUMBER() over(order by a.inquiryid) i,a.InquiryDate,b.PatientName,a.InquiryRemark,a.InquiryComment,starcomment from Inquiry a join Patient b on a.PatientCode = b.PatientCode where InquiryDate = '{date}'";
+            List<GetCommentByDate> list = _db.TableToList<GetCommentByDate>(_db.GetDateSet(sql).Tables[0]);
+            return list;
+        }
+        //查余额  医生
+        public List<Wallet_Doctor> GetWalletByDoctorCode(string DoctorCode="") 
+        {
+            string sql = $"select * from wallet b left join doctor a  on a.doctorcode=b.doctorcode where a.doctorcode='{DoctorCode}'";
+            List<Wallet_Doctor> list = _db.TableToList<Wallet_Doctor>(_db.GetDateSet(sql).Tables[0]);
             return list;
         }
         #endregion

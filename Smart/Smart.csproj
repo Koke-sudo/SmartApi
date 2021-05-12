@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AopSdk\AopSdk.csproj" />
     <ProjectReference Include="..\SmartMedical.BLL\SmartMedical.BLL.csproj" />
     <ProjectReference Include="..\SmartMedical.DAL\SmartMedical.DAL.csproj" />
     <ProjectReference Include="..\SmartMedical.Model\SmartMedical.Model.csproj" />
