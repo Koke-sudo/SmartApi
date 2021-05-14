@@ -22,7 +22,7 @@ namespace SmartMedical.BLL
             _db = db;
         }
 
-
+        
 
         #region 患者模块
         //患者登录
@@ -147,7 +147,7 @@ namespace SmartMedical.BLL
             return list;
         }
         //获取诊断列表
-        public List<GetInquiryByDate> GetInquiryByDate(string date = "")
+        public List<GetInquiryByDate> GetInquiryByDate(string date="")
         {
             string sql = $"select ROW_NUMBER() over(order by a.patientcode) i,a.PatientCode,a.InquiryDate,a.Diagnose,InquiryPrice,PatientName,InquiryRemark,PatientAge,a.InquiryMessage,a.InquiryComment from inquiry a join Patient b on a.PatientCode = b.PatientCode where inquirydate = '{date}'";
             List<GetInquiryByDate> list = _db.TableToList<GetInquiryByDate>(_db.GetDateSet(sql).Tables[0]);

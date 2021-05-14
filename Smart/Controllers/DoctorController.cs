@@ -14,6 +14,7 @@ namespace SmartApi.Controllers
     [Route("SmartMedical/Doctor")]
     public class DoctorController : Controller
     {
+        //依赖注入
         SmartMedicalBLL _bll;
         LoginTel _logintel;
         public DoctorController(SmartMedicalBLL bll, LoginTel logintel)

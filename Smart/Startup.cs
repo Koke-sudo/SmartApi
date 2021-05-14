@@ -35,6 +35,7 @@ namespace Smart
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Smart", Version = "v1" });
             });
+            //×¢²á·þÎñ
             services.AddTransient<SmartMedicalBLL>();
             services.AddTransient<DBHelper>();
             services.AddTransient<LoginTel>();
